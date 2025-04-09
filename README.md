@@ -1,10 +1,10 @@
-# Project Generator
+# Spindlewrit
 
 A tool to generate project structures with AI-powered suggestions from Gemma function calling.
 
 ## Overview
 
-The Project Generator is a CLI tool that can create standardized project structures for Python, Rust, and other types of projects. It integrates with the MCP Todo Server to generate projects based on TODO items, using Gemma function calling for AI-powered suggestions.
+Spindlewrit is a CLI tool that can create standardized project structures for Python, Rust, and other types of projects. It integrates with the MCP Todo Server to generate projects based on TODO items, using Gemma function calling for AI-powered suggestions.
 
 ## Features
 
@@ -20,7 +20,7 @@ The Project Generator is a CLI tool that can create standardized project structu
 git clone <repository-url>
 
 # Navigate to the project directory
-cd project-generator
+cd Spindlewrit
 
 # Create and activate a virtual environment
 python -m venv venv
@@ -36,10 +36,10 @@ pip install -e .
 
 ```bash
 # Create a Python project
-project-generator create --name my-python-project --description "A sample Python project" --type python --path /path/to/output
+spindlewrit create --name my-python-project --description "A sample Python project" --type python --path /path/to/output
 
 # Create a Rust project
-project-generator create --name my-rust-project --description "A sample Rust project" --type rust --path /path/to/output
+spindlewrit create --name my-rust-project --description "A sample Rust project" --type rust --path /path/to/output
 ```
 
 ### Create a project from a Todo item
@@ -49,7 +49,7 @@ project-generator create --name my-rust-project --description "A sample Rust pro
 export GEMMA_API_KEY=your-api-key
 
 # Generate a project from a Todo item
-project-generator from-todo --todo-id todo123 --output-dir /path/to/output
+spindlewrit from-todo --todo-id todo123 --output-dir /path/to/output
 ```
 
 ## Development

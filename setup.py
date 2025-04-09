@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="project_generator",
+    name="spindlewrit",
     version="0.1.0",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
@@ -13,7 +13,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "project-generator=project_generator.cli:main",
+            "spindlewrit=project_generator.cli:main",
         ],
     },
     python_requires=">=3.8",
