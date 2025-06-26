@@ -5,7 +5,7 @@ from pathlib import Path
 
 from .models import ProjectConfig, ProjectType
 from .generator import ProjectGenerator
-from .gemma_integration import GemmaProjectClient
+from .gemma_integration import GemmaProjectClient, MockGemmaProjectClient
 
 
 @click.group()
@@ -61,18 +61,23 @@ def create(name, description, project_type, path):
     help='Directory where to create the project (defaults to current directory)'
 )
 @click.option('--api-key', help='Gemma API key (defaults to GEMMA_API_KEY env variable)')
-def from_todo(todo_id, output_dir, api_key):
+@click.option('--mock', is_flag=True, help='Use mock Gemma client for testing (no API key required)')
+def from_todo(todo_id, output_dir, api_key, mock):
     """Create a project from a TODO item using Gemma-powered AI suggestions."""
-    api_key = api_key or os.environ.get('GEMMA_API_KEY')
-    if not api_key:
-        click.echo(click.style(
-            "Error: Gemma API key not provided. Use --api-key or set GEMMA_API_KEY environment variable.",
-            fg='red'
-        ))
-        sys.exit(1)
+    if mock:
+        client = MockGemmaProjectClient()
+        click.echo(click.style("Using mock Gemma client for testing", fg='yellow'))
+    else:
+        api_key = api_key or os.environ.get('GEMMA_API_KEY')
+        if not api_key:
+            click.echo(click.style(
+                "Error: Gemma API key not provided. Use --api-key or set GEMMA_API_KEY environment variable.",
+                fg='red'
+            ))
+            sys.exit(1)
+        client = GemmaProjectClient(api_key)
     
     try:
-        client = GemmaProjectClient(api_key)
         project_details = client.generate_from_todo(todo_id)
         
         if not project_details:

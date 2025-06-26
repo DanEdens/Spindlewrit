@@ -153,15 +153,43 @@ class MockGemmaProjectClient(GemmaProjectClient):
     def __init__(self):
         super().__init__("mock_api_key")
     
+    def _fetch_todo(self, todo_id: str) -> Dict[str, Any]:
+        """Mock todo fetch - returns a realistic todo item."""
+        return {
+            "id": todo_id,
+            "description": f"Create a comprehensive test automation framework for todo-{todo_id}",
+            "project": "test-framework",
+            "status": "pending",
+            "metadata": {
+                "priority": "high",
+                "tags": ["testing", "automation", "framework"]
+            }
+        }
+    
     def _call_gemma_function(self, prompt: str, function_schema: Dict[str, Any]) -> Dict[str, Any]:
-        """Mock Gemma API response."""
-        # Extract project name hint from the prompt
+        """Mock Gemma API response with more intelligent parsing."""
+        # Extract meaningful info from the prompt
         import re
         description_match = re.search(r"Description: (.*?)(?:\n|$)", prompt)
-        description = description_match.group(1) if description_match else "Sample Project"
+        project_match = re.search(r"Project: (.*?)(?:\n|$)", prompt)
         
-        # Create a mock project name from the description
-        name = description.lower().replace(" ", "-")[:20]
+        description = description_match.group(1) if description_match else "AI-Generated Test Project"
+        project = project_match.group(1) if project_match else "test-project"
+        
+        # Create a more realistic project name from the description
+        name = description.lower()
+        name = re.sub(r'[^a-z0-9\s-]', '', name)  # Remove special chars
+        name = re.sub(r'\s+', '-', name)  # Replace spaces with hyphens
+        name = name[:30]  # Limit length
+        if not name:
+            name = f"generated-project-{hash(description) % 1000}"
+
+        # Determine project type based on keywords
+        project_type = "python"
+        if any(word in description.lower() for word in ["rust", "cargo", "rustc"]):
+            project_type = "rust"
+        elif any(word in description.lower() for word in ["web", "html", "css", "js"]):
+            project_type = "common"
         
         return {
             "function_call": {
@@ -169,9 +197,11 @@ class MockGemmaProjectClient(GemmaProjectClient):
                 "arguments": json.dumps({
                     "name": name,
                     "description": description,
-                    "project_type": "python",
+                    "project_type": project_type,
                     "additional_details": {
-                        "dependencies": ["requests", "pydantic"]
+                        "dependencies": ["pytest", "requests"] if project_type == "python" else [],
+                        "testing_framework": "pytest" if project_type == "python" else "cargo test",
+                        "generated_by": "spindlewrit_mock_client"
                     }
                 })
             }
